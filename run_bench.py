@@ -1,4 +1,4 @@
-import os, numpy, time, sys
+import os, numpy, time, sys, json
 
 sizes = [100000, 1000000, 10000000]
 
@@ -34,8 +34,8 @@ for o in tests:
                     print output_list[0:10]
                     
         with open("./temp_time", "r") as time:
+            new_times = [int(t) for t in time.read().split()]
             with open("results/times.txt", "a") as record:
-                new_times = [int(t) for t in time.read().split()]
                 if new_times is not []:
                     record.write("Time: %s\n" % now)
                     record.write("Size: %d\n" % s)
@@ -44,6 +44,13 @@ for o in tests:
                     for t in new_times:
                         record.write("%d\n"%t)
                     record.write("=========================\n")
+            with open("results/times.json", "w+") as record:
+                if os.path.getsize("results/times.json") == 0:
+                    data = {}
+                else:
+                    data = json.load(record)
+                data[s] = new_times
+                json.dump(data, record)
         os.system("rm temp_time temp_res")
     os.chdir(start_dir)
 
